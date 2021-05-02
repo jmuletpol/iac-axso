@@ -1,6 +1,10 @@
 --fitxer: taules-axsodb.sql
 USE axso2021db;
 
+DROP TABLE IF EXISTS etc_passwd_group;
+DROP TABLE IF EXISTS etc_passwd;
+DROP TABLE IF EXISTS etc_group;
+
 CREATE TABLE IF NOT EXISTS etc_group (
     group_name varchar(255) NOT NULL,
     password varchar(255) NOT NULL DEFAULT '',

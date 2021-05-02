@@ -72,4 +72,4 @@
 
     - name: "Show the imported users"
       debug:
-        msg: {{r}}
+        msg: "{{r}}"
