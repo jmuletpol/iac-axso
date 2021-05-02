@@ -1,0 +1,32 @@
+#cloud-config
+# vim: syntax=yaml
+# examples:
+# https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+bootcmd:
+  - echo 192.168.1.200 ubt-host-server >> /etc/hosts
+  - echo 192.168.1.210 ubt-vm1 >> /etc/hosts
+  - echo 192.168.1.221 ubt-tf1 >> /etc/hosts
+runcmd:
+ - [ ls, -l, / ]
+ - [ sh, -xc, "echo $(date) ': hello world!'" ]
+identity: {hostname: ubt-tf1, password: $6$kzrA3QaVN3g.T4aw$rAqzRZUcPL.sH5Oq0/g4sWiW2gaEje/jrQo55ovtGioLyEuF/ReVwBz2pHwH8aH/Avti3.Uq352yUM0G1c1yx/,
+    realname: Josep Mulet Pol, username: ubt-admin}
+keyboard: {layout: es, toggle: null, variant: ''}
+locale: C
+ssh_pwauth: true
+disable_root: false
+chpasswd:
+  list: |
+     root:password
+  expire: false
+users:
+  - name: ubt-admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    home: /home/ubt-admin
+    shell: /bin/bash
+    lock_passwd: false
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDIEu8OpVo8yVIc5/K7FpAyBwhQ2Q3B9sdr4FoznCRX7j12vlAsRPQTknrs+jlZxDR96IIpYST2pyadzoeVwpUTLFBMEcEuGnWQGExBTbBu8vl0VVB4NeVVa3lXwCgllp2NVPRiGQUcLTPdT2zwc1D1w75MSbtkod0C9KI9+k9GDe+g/86rt+UvoT5gq9uJ0IMq6f69ScuKku/IXbc+bt+BbFnNyNSsjIMW+TZTYjTMHKdtAFkPfa8ckylmFdjB41LQULHyvr92o29KepJmwD1JDfvJZ7jdLLowfcNFEA+SgamZNCd06q2yJ0cy/Dq20pd2hRO1mnurPryli/9tCtlz/U/deRS2ciJsIz1gEKRGBTjxvVyP5TvgJMFvpcU6TsIgBw6ASe600/3GnI4Sb39Qj5c4XqhVVhPDki/093AUABnsNIZ6zcqMDu5J7DhWT649aY1Q/RgV7Y+XnnMPDJjnprEr6bMp1JG+JOPGFgNe0/B6AAKv3X1B+bIFaYrFUyR7WBQvAhIsriOAM05BhQaoGz6v9MZ7IBMbhWUyAqmCjqaL/egLfjn1Pue5AEpdDIpaSS7gj8pRX86rS4zWIbmd8gehWohReq7qi9MpMjhfmQ8NMpjPw1se3QyKF6DTvBXa06TAyEFpYenNHnPO6A2O5a4sK+N43VXLR+eicFEKw== josep@MacBook-MacBook-Pro-de-Josep.local
+final_message: "The system is finally up, after $UPTIME seconds"
+

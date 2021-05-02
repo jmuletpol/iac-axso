@@ -1,0 +1,43 @@
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html#examples
+- hosts: ubt-terraformed
+  become: yes 
+  vars:
+    users:
+      - name: "Nom complet usuari 1"
+        username: "usuari01"
+        passwd: "Pwd01"
+      - name: "Nom complet usuari 2"
+        username: "usuari02"
+        passwd: "Pwd02"
+      - name: "Nom complet usuari 3"
+        username: "usuari03"
+        passwd: "Pwd03"
+      - name: "Nom complet usuari 4"
+        username: "usuari04"
+        passwd: "Pwd04"
+            
+  tasks: 
+    - name: "Adding user {{item.username}}"
+      user:
+        name: "{{item.username}}"
+        create_home: yes
+        comment: "{{item.name}}"
+        password: "{{ item.passwd | password_hash('sha512')}}"
+        skeleton: "/etc/skel"
+        state: present
+        shell: "/bin/bash"
+      with_items: "{{users}}"
+
+    - name: "Setting password expiry for {{item.username}}"
+      shell: chage --maxdays 365 --warndays 15 "{{item.username}}"
+      with_items: "{{users}}"
+
+    - name: "Determine expiry info of {{item.username}}"
+      shell: chage -l "{{item.username}}"
+      register: "r"
+      with_items: "{{users}}"
+
+    - name: "Show expiry info"
+      debug: msg="item.stdout={{item.stdout}}, item.changed={{item.changed}}"
+      with_items: "{{r.results}}"

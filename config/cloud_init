@@ -1,0 +1,59 @@
+#cloud-config
+#copied from manual installation ubt-admin@ubt-vm1:/var/log/installer/autoinstall-user-data
+autoinstall:
+  apt:
+    geoip: true
+    preserve_sources_list: false
+    primary:
+    - arches: [amd64, i386]
+      uri: http://es.archive.ubuntu.com/ubuntu
+    - arches: [default]
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  identity: {hostname: ubttf-vm1, password: $6$kzrA3QaVN3g.T4aw$rAqzRZUcPL.sH5Oq0/g4sWiW2gaEje/jrQo55ovtGioLyEuF/ReVwBz2pHwH8aH/Avti3.Uq352yUM0G1c1yx/,
+    realname: Josep Mulet Pol, username: ubt-admin}
+  keyboard: {layout: es, toggle: null, variant: ''}
+  locale: C
+  network:
+    ethernets:
+      ens3:
+        addresses: [192.168.1.221/24]
+        gateway4: 192.168.1.1
+        nameservers:
+          addresses: [80.58.61.250, 80.58.61.254, 1.1.1.1, 8.8.8.8]
+          search: []
+    version: 2
+  ssh:
+    allow-pw: true
+    authorized-keys: []
+    install-server: true
+  storage:
+    config:
+    - {ptable: gpt, serial: QEMU_HARDDISK_QM00007, path: /dev/sda, preserve: false,
+      name: '', grub_device: true, type: disk, id: disk-sda}
+    - {ptable: gpt, serial: QEMU_HARDDISK_QM00009, path: /dev/sdb, preserve: false,
+      name: '', grub_device: true, type: disk, id: disk-sdb}
+    - {device: disk-sda, size: 1048576, flag: bios_grub, number: 1, preserve: false,
+      grub_device: false, type: partition, id: partition-0}
+    - {device: disk-sdb, size: 1048576, flag: bios_grub, number: 1, preserve: false,
+      grub_device: false, type: partition, id: partition-1}
+    - {device: disk-sda, size: 16102981632, wipe: superblock, flag: '', number: 2,
+      preserve: false, grub_device: false, type: partition, id: partition-2}
+    - {device: disk-sdb, size: 16102981632, wipe: superblock, flag: '', number: 2,
+      preserve: false, grub_device: false, type: partition, id: partition-3}
+    - name: md0
+      raidlevel: raid1
+      devices: [partition-2, partition-3]
+      spare_devices: []
+      preserve: false
+      ptable: gpt
+      type: raid
+      id: raid-0
+    - {device: raid-0, size: 5368709120, wipe: superblock, flag: swap, number: 1,
+      preserve: false, grub_device: false, type: partition, id: partition-4}
+    - {fstype: swap, volume: partition-4, preserve: false, type: format, id: format-0}
+    - {device: format-0, path: '', type: mount, id: mount-0}
+    - {device: raid-0, size: 10720641024, wipe: superblock, flag: '', number: 2, preserve: false,
+      grub_device: false, type: partition, id: partition-5}
+    - {fstype: ext4, volume: partition-5, preserve: false, type: format, id: format-1}
+    - {device: format-1, path: /, type: mount, id: mount-1}
+  version: 1

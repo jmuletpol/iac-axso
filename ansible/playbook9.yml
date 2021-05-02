@@ -1,0 +1,75 @@
+
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html#examples
+- hosts: ubt-terraformed
+  become: yes  
+  vars:
+    mysql_root_password: axso2021db
+    mysql_axso_password: axs0DbPwd
+  tasks: 
+    - name: Install mariadb
+      apt:
+        name: 
+          - mariadb-server
+          - python3-pymysql
+        state: latest
+        update_cache: yes
+ 
+    - name: Enable service mariadb and ensure it is not masked
+      systemd:
+        name: mariadb
+        enabled: yes
+        masked: no
+
+    - name: ensure mariadb is started
+      systemd:
+        state: started
+        name: mariadb
+ 
+    - name: update mysql root password for all root accounts
+      shell: mariadb -u root -p{{ mysql_root_password }} -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '{{ mysql_root_password }}'; FLUSH PRIVILEGES;"
+
+    - name: create a local user axso 
+      mysql_user:
+        name: axso
+        host: "{{ item }}"
+        password: "{{ mysql_axso_password }}"
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        check_implicit_admin: yes
+        priv: "*.*:ALL,GRANT"
+      with_items: 
+        - 192.168.1.*
+        - 127.0.0.1
+        - ::1
+        - localhost 
+        
+    - name: Remove test database
+      mysql_db: name=test state=absent login_user=root login_password={{ mysql_root_password }}
+
+    - name: Create a new database 
+      mysql_db: name=axso2021db state=present login_user=axso login_password={{ mysql_axso_password }}
+      
+    - name: Copiam scripts de creació de taules i importacio de dades
+      copy: src=./assets/{{item}} dest=/tmp/{{item}}
+      with_items:
+        - taules-axsodb.sql
+        - importar-etcdata.sql
+        - usuari_group.py
+
+    - name: Crea les dades de la relacio N:M amb script de python
+      shell: /usr/bin/python3.8 /tmp/usuari_group.py
+
+    - name: Executam script de creació de taules
+      mysql_db: name=axso2021db state=import target=/tmp/taules-axsodb.sql login_user=axso login_password="{{ mysql_axso_password }}"
+
+    - name: Executam script importació de dades
+      mysql_db: name=axso2021db state=import target=/tmp/importar-etcdata.sql login_user=axso login_password="{{ mysql_axso_password }}"
+
+    - name: "Get the imported users"
+      shell: mariadb -u root -p{{ mysql_root_password }} -e "USE axso2021db; SELECT * FROM etc_passwd;"
+      register: "r"
+
+    - name: "Show the imported users"
+      debug:
+        msg: {{r}}
