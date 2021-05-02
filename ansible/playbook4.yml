@@ -1,6 +1,6 @@
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html#examples
-- hosts: ubt-terraformed
+- hosts: ubt_terraformed
   become: yes 
   vars:
     users:
@@ -38,6 +38,6 @@
       register: "r"
       with_items: "{{users}}"
 
-    - name: "Show expiry info"
-      debug: msg="item.stdout={{item.stdout}}, item.changed={{item.changed}}"
+    - name: "Show expiry info" 
+      debug: var="{{item}}.stdout_lines"
       with_items: "{{r.results}}"

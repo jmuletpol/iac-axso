@@ -1,6 +1,6 @@
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
 # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html#examples
-- hosts: ubt-terraformed
+- hosts: ubt_terraformed
   become: yes  
   tasks: 
     - name: Install apache2
