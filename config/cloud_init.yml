@@ -2,6 +2,7 @@
 # vim: syntax=yaml
 # examples:
 # https://cloudinit.readthedocs.io/en/latest/topics/examples.html
+hostname: ubt-tf1
 bootcmd:
   - echo 192.168.1.200 ubt-host-server >> /etc/hosts
   - echo 192.168.1.210 ubt-vm1 >> /etc/hosts
