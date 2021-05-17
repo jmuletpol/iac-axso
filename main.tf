@@ -46,7 +46,7 @@ resource "libvirt_domain" "domain-ubuntu2010tf1" {
   network_interface {
     network_name   = "host-bridge"
     bridge = "br0"
-    wait_for_lease = true
+    wait_for_lease = false
     hostname = var.vm_hostname
   }
 
@@ -71,31 +71,5 @@ resource "libvirt_domain" "domain-ubuntu2010tf1" {
     listen_type = "address"
     autoport    = true
   }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo 'Hello World'"
-    ]
-
-    connection {
-      type                = "ssh"
-      user                = var.ssh_username
-      host                = var.ip_address #libvirt_domain.domain-ubuntu2010tf1.network_interface[0].addresses[0]
-      private_key         = file(var.ssh_private_key)
-      #bastion_host        = "MacBook-MacBook-Pro-de-Josep"
-      #bastion_user        = "josep"
-      #bastion_private_key = file("~/.ssh/deploys.pem")
-      timeout             = "2m"
-    }
-  }
-
-  #provisioner "local-exec" {
-  #  command = <<EOT
-  #    echo "[axsotf]" > hosts.ini
-  #    echo "${libvirt_domain.domain-ubuntu.network_interface[0].addresses[0]}" >> hosts.ini
-  #    echo "[axsotf:vars]" >> hosts.ini
-  #    echo "ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand=\"ssh -W %h:%p -q ams-kvm-remote-host\"'" >> hosts.ini
-  #    ansible-playbook -u ${var.ssh_username} --private-key ${var.ssh_private_key} -i hosts.ini ansible/playbook.yml
-  #    EOT
-  #}
+  
 }
