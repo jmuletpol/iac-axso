@@ -13,7 +13,7 @@ resource "libvirt_volume" "ubuntu2010tf1-qcow2" {
   pool = libvirt_pool.terraform.name
   source = var.ubuntu_20_10_img_url
   format = "qcow2"
-  size = 15 * 1024 * 1024 * 1024
+  #size = 15 * 1024 * 1024 * 1024
 }
 
 data "template_file" "user_data" {
@@ -80,7 +80,7 @@ resource "libvirt_domain" "domain-ubuntu2010tf1" {
     connection {
       type                = "ssh"
       user                = var.ssh_username
-      host                = libvirt_domain.domain-ubuntu2010tf1.network_interface[0].addresses[0]
+      host                = var.ip_address #libvirt_domain.domain-ubuntu2010tf1.network_interface[0].addresses[0]
       private_key         = file(var.ssh_private_key)
       #bastion_host        = "MacBook-MacBook-Pro-de-Josep"
       #bastion_user        = "josep"

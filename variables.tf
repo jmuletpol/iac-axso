@@ -23,3 +23,8 @@ variable "ssh_private_key" {
   description = "the private key to use"
   default     = "~/.ssh/id_rsa"
 }
+
+variable "ip_address" {
+  description = "Static IP address of VM"
+  default     = "192.168.1.211"
+}
