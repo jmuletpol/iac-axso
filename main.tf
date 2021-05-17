@@ -13,6 +13,7 @@ resource "libvirt_volume" "ubuntu2010tf1-qcow2" {
   pool = libvirt_pool.terraform.name
   source = var.ubuntu_20_10_img_url
   format = "qcow2"
+  size = 15 * 1024 * 1024 * 1024
 }
 
 data "template_file" "user_data" {
@@ -44,8 +45,9 @@ resource "libvirt_domain" "domain-ubuntu2010tf1" {
 
   network_interface {
     network_name   = "host-bridge"
+    bridge = "br0"
     wait_for_lease = true
-    hostname       = var.vm_hostname
+    hostname = var.vm_hostname
   }
 
   console {
