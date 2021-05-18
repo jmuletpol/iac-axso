@@ -1,5 +1,5 @@
-# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
-# https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html#examples
+
+# Apartat 7 de la pràctica AXSO
 - hosts: ubt_terraformed
   become: yes  
   tasks: 
